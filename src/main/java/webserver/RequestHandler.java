@@ -1,9 +1,11 @@
 package webserver;
 
+import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import utils.FileIoUtils;
 import utils.RequestUrlExtractor;
+import utils.UserGenerator;
 
 import java.io.*;
 import java.net.Socket;
@@ -12,6 +14,7 @@ import java.net.URISyntaxException;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final String TEMPLATES_PATH = "./templates";
+    private static final String USER_CREATE_URL = "/user/create";
 
     private Socket connection;
 
@@ -27,6 +30,11 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String requestHeaderFirstLine = br.readLine();
             String url = RequestUrlExtractor.extractUrl(requestHeaderFirstLine);
+
+            if (url.startsWith(USER_CREATE_URL)) {
+                User user = UserGenerator.createUser(url);
+                logger.debug("New User Created! UserId : {}", user.getUserId());
+            }
             String filepath = TEMPLATES_PATH + url;
 
             DataOutputStream dos = new DataOutputStream(out);
