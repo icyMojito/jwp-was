@@ -7,10 +7,8 @@ import java.util.Map;
 import java.util.StringTokenizer;
 
 public class UserGenerator {
-    private static final String PARAMETER_DELIMITER = "\\?";
     private static final String USER_DATA_DELIMITER = "&";
     private static final String USER_DATA_VALUE_DELIMITER = "=";
-    private static final int USER_DATA_INDEX = 1;
     private static final int USER_DATA_LABEL_INDEX = 0;
     private static final int USER_DATA_VALUE_INDEX = 1;
     private static final String USER_ID_LABEL = "userId";
@@ -18,11 +16,10 @@ public class UserGenerator {
     private static final String NAME_LABEL = "name";
     private static final String EMAIL_LABEL = "email";
 
-    public static User createUser(String url) {
+    public static User createUser(String body) {
         Map<String, String> userDatas = new HashMap<>();
 
-        String[] tokens = url.split(PARAMETER_DELIMITER);
-        StringTokenizer st = new StringTokenizer(tokens[USER_DATA_INDEX], USER_DATA_DELIMITER);
+        StringTokenizer st = new StringTokenizer(body, USER_DATA_DELIMITER);
         while (st.hasMoreTokens()) {
             String data = st.nextToken();
             String[] dataTokens = data.split(USER_DATA_VALUE_DELIMITER);
