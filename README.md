@@ -16,7 +16,7 @@
 
 - [x] 2. “회원가입” 메뉴에서 회원가입을 하기 위해 사용자가 입력한 값이 URL로 서버에 전달되면, 이 값을 파싱해 model.User 클래스에 저장한다.
 
-- [ ] 3. http://localhost:8080/user/form.html 파일의 form 태그 method를 get에서 post로 수정한 후 회원가입 기능이 정상적으로 동작하도록 구현한다.
+- [x] 3. http://localhost:8080/user/form.html 파일의 form 태그 method를 get에서 post로 수정한 후 회원가입 기능이 정상적으로 동작하도록 구현한다.
 
 - [ ] 4. “회원가입”을 완료하면 redirect 방식처럼 “index.html”로 이동해야 한다. 즉, 브라우저의 URL이 /index.html로 변경해야 한다.
 
