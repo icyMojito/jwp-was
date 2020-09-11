@@ -1,5 +1,6 @@
 package webserver;
 
+import model.HttpContentType;
 import model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,12 +16,9 @@ import java.net.URISyntaxException;
 public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final String TEMPLATES_PATH = "./templates";
-    private static final String CSS_PATH = "./static";
+    private static final String STATIC_PATH = "./static";
     private static final String POST_METHOD = "POST";
     private static final String EMPTY_BODY = "";
-    private static final String STYLESHEET_FILE_EXTENSION = ".css";
-    private static final String STYLESHEET_TYPE = "text/css";
-    private static final String HTML_TYPE = "text/html";
 
     private Socket connection;
 
@@ -49,7 +47,7 @@ public class RequestHandler implements Runnable {
             } else {
                 String url = RequestUrlExtractor.extractUrl(requestHeaderFirstLine);
                 String filepath = findFilePath(url);
-                String contentType = findContentType(url);
+                String contentType = HttpContentType.findContentType(url);
 
                 body = FileIoUtils.loadFileFromClasspath(filepath);
                 response200Header(dos, contentType, body.length);
@@ -62,17 +60,10 @@ public class RequestHandler implements Runnable {
     }
 
     private String findFilePath(String url) {
-        if (url.endsWith(STYLESHEET_FILE_EXTENSION)) {
-            return CSS_PATH + url;
+        if (HttpContentType.isStaticFile(url)) {
+            return STATIC_PATH + url;
         }
         return TEMPLATES_PATH + url;
-    }
-
-    private String findContentType(String url) {
-        if (url.endsWith(STYLESHEET_FILE_EXTENSION)) {
-            return STYLESHEET_TYPE;
-        }
-        return HTML_TYPE;
     }
 
     private void response200Header(DataOutputStream dos, String contentType, int lengthOfBodyContent) {
