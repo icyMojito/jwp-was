@@ -20,4 +20,4 @@
 
 - [x] 4. “회원가입”을 완료하면 redirect 방식처럼 “index.html”로 이동해야 한다. 즉, 브라우저의 URL이 /index.html로 변경해야 한다.
 
-- [ ] 5. Stylesheet 파일을 지원하도록 구현한다.
+- [x] 5. Stylesheet 파일을 지원하도록 구현한다.
