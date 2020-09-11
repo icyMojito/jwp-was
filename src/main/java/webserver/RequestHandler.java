@@ -16,6 +16,7 @@ public class RequestHandler implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     private static final String TEMPLATES_PATH = "./templates";
     private static final String POST_METHOD = "POST";
+    private static final String EMPTY_BODY = "";
 
     private Socket connection;
 
@@ -31,18 +32,24 @@ public class RequestHandler implements Runnable {
             BufferedReader br = new BufferedReader(new InputStreamReader(in, "UTF-8"));
             String requestHeaderFirstLine = br.readLine();
 
+            DataOutputStream dos = new DataOutputStream(out);
+            byte[] body = EMPTY_BODY.getBytes();
+
             if (requestHeaderFirstLine.startsWith(POST_METHOD)) {
-                String body = RequestBodyExtractor.extractBody(br);
-                User user = UserGenerator.createUser(body);
+                String requestBody = RequestBodyExtractor.extractBody(br);
+                User user = UserGenerator.createUser(requestBody);
                 logger.debug("New User Created! User Id : {}", user.getUserId());
+
+                String redirectUrl = "/index.html";
+                response302Header(dos, redirectUrl);
+            } else {
+                String url = RequestUrlExtractor.extractUrl(requestHeaderFirstLine);
+                String filepath = TEMPLATES_PATH + url;
+
+                body = FileIoUtils.loadFileFromClasspath(filepath);
+                response200Header(dos, body.length);
             }
 
-            String url = RequestUrlExtractor.extractUrl(requestHeaderFirstLine);
-            String filepath = TEMPLATES_PATH + url;
-
-            DataOutputStream dos = new DataOutputStream(out);
-            byte[] body = FileIoUtils.loadFileFromClasspath(filepath);
-            response200Header(dos, body.length);
             responseBody(dos, body);
         } catch (IOException | URISyntaxException e) {
             logger.error(e.getMessage());
@@ -54,6 +61,16 @@ public class RequestHandler implements Runnable {
             dos.writeBytes("HTTP/1.1 200 OK \r\n");
             dos.writeBytes("Content-Type: text/html;charset=utf-8\r\n");
             dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+    }
+
+    private void response302Header(DataOutputStream dos, String redirectUrl) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Found \r\n");
+            dos.writeBytes("Location: " + redirectUrl + "\r\n");
             dos.writeBytes("\r\n");
         } catch (IOException e) {
             logger.error(e.getMessage());
